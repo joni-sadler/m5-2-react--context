@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -7,11 +7,7 @@ import useInterval from "../hooks/use-interval.hook";
 import cookieSrc from "../cookie.svg";
 import Item from "./Item";
 
-const items = [
-  { id: "cursor", name: "Cursor", cost: 10, value: 1 },
-  { id: "grandma", name: "Grandma", cost: 100, value: 10 },
-  { id: "farm", name: "Farm", cost: 1000, value: 80 },
-];
+const { items } = require("./data");
 
 const calculateCookiesPerSecond = (purchasedItems) => {
   return Object.keys(purchasedItems).reduce((acc, itemId) => {
@@ -23,14 +19,7 @@ const calculateCookiesPerSecond = (purchasedItems) => {
   }, 0);
 };
 
-const Game = () => {
-  const [numCookies, setNumCookies] = React.useState(1000);
-
-  const [purchasedItems, setPurchasedItems] = React.useState({
-    cursor: 0,
-    grandma: 0,
-    farm: 0,
-  });
+const Game = ({numCookies, setNumCookies, purchasedItems, setPurchasedItems}) => {
 
   const incrementCookies = () => {
     setNumCookies((c) => c + 1);
@@ -54,6 +43,15 @@ const Game = () => {
     const handleKeydown = (ev) => {
       if (ev.code === "Space") {
         incrementCookies();
+      }
+
+      if (ev.code === "KeyR") {
+        setNumCookies(1000);
+        setPurchasedItems({
+          cursor: 0,
+          grandma: 0,
+          farm: 0,
+        });
       }
     };
 
@@ -79,31 +77,31 @@ const Game = () => {
 
       <ItemArea>
         <SectionTitle>Items:</SectionTitle>
-        {items.map((item, index) => {
-          return (
-            <Item
-              key={item.id}
-              index={index}
-              name={item.name}
-              cost={item.cost}
-              value={item.value}
-              numOwned={purchasedItems[item.id]}
-              handleAttemptedPurchase={() => {
-                if (numCookies < item.cost) {
-                  alert("Cannot afford item");
-                  return;
-                }
+          {items.map((item, index) => {
+            return (
+              <Item
+                key={item.id}
+                index={index}
+                name={item.name}
+                cost={item.cost}
+                value={item.value}
+                numOwned={purchasedItems[item.id]}
+                handleAttemptedPurchase={() => {
+                  if (numCookies < item.cost) {
+                    alert("Cannot afford item");
+                    return;
+                  }
 
-                setNumCookies(numCookies - item.cost);
-                setPurchasedItems({
-                  ...purchasedItems,
-                  [item.id]: purchasedItems[item.id] + 1,
-                });
-              }}
-            />
-          );
-        })}
-      </ItemArea>
+                  setNumCookies(numCookies - item.cost);
+                  setPurchasedItems({
+                    ...purchasedItems,
+                    [item.id]: purchasedItems[item.id] + 1,
+                  });
+                }}
+              />
+            );
+          })}
+        </ItemArea>
       <HomeLink to="/">Return home</HomeLink>
     </Wrapper>
   );
