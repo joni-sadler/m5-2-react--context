@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -6,29 +6,20 @@ import useInterval from "../hooks/use-interval.hook";
 
 import cookieSrc from "../cookie.svg";
 import Item from "./Item";
+import {GameContext} from "./GameContext";
 
 const { items } = require("./data");
 
-const calculateCookiesPerSecond = (purchasedItems) => {
-  return Object.keys(purchasedItems).reduce((acc, itemId) => {
-    const numOwned = purchasedItems[itemId];
-    const item = items.find((item) => item.id === itemId);
-    const value = item.value;
 
-    return acc + value * numOwned;
-  }, 0);
-};
-
-const Game = ({numCookies, setNumCookies, purchasedItems, setPurchasedItems}) => {
+const Game = () => {
+  const {numCookies, setNumCookies, purchasedItems, setPurchasedItems, cookiesPerSecond} = useContext(GameContext)
 
   const incrementCookies = () => {
     setNumCookies((c) => c + 1);
   };
 
   useInterval(() => {
-    const numOfGeneratedCookies = calculateCookiesPerSecond(purchasedItems);
-
-    setNumCookies(numCookies + numOfGeneratedCookies);
+    setNumCookies(numCookies + cookiesPerSecond);
   }, 1000);
 
   React.useEffect(() => {
@@ -45,6 +36,7 @@ const Game = ({numCookies, setNumCookies, purchasedItems, setPurchasedItems}) =>
         incrementCookies();
       }
 
+      // Reset game
       if (ev.code === "KeyR") {
         setNumCookies(1000);
         setPurchasedItems({
@@ -67,7 +59,7 @@ const Game = ({numCookies, setNumCookies, purchasedItems, setPurchasedItems}) =>
       <GameArea>
         <Indicator>
           <Total>{numCookies} cookies</Total>
-          <strong>{calculateCookiesPerSecond(purchasedItems)}</strong> cookies
+          <strong>{cookiesPerSecond}</strong> cookies
           per second
         </Indicator>
         <Button onClick={incrementCookies}>

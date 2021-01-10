@@ -7,25 +7,8 @@ import Game from "./Game";
 
 const { items } = require("./data");
 
-function usePersistedState(defaultValue, key) {
-  const [state, setState] = React.useState(
-    () => JSON.parse(localStorage.getItem(key)) || defaultValue
-  );
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
-  return [state, setState];
-}
+function App({numCookies, setNumCookies, purchasedItems, setPurchasedItems}) {
 
-function App(props) {
-
-  const [purchasedItems, setPurchasedItems] = usePersistedState({
-      cursor: 0,
-      grandma: 0,
-      farm: 0,
-    }, 'purchased-items');
-
-  const [numCookies, setNumCookies] = usePersistedState(1000, 'num-cookies');
 
   return (
     <>
